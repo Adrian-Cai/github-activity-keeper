@@ -7,5 +7,5 @@ build/
 .venv/
 venv/
 .env
-heartbeat.md
-daily.md
+data/heartbeat.md
+data/quotes.md

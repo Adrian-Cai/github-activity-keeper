@@ -2,14 +2,8 @@ name: GitHub Activity Keeper
 
 on:
   schedule:
-    - cron: "0 */3 * * *"
+    - cron: "0 * * * *"
   workflow_dispatch:
-    inputs:
-      force:
-        description: "Force run regardless of schedule"
-        required: false
-        default: false
-        type: boolean
 
 permissions:
   contents: write
@@ -28,13 +22,12 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pyyaml
+        run: pip install pyyaml
 
       - name: Run Activity Keeper
         env:
           INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           INPUT_GITHUB_USERNAME: ${{ github.repository_owner }}
           INPUT_CONFIG_PATH: config.yaml
-        run: python -m keeper
+          REMOTE_URL: ${{ github.server_url }}/${{ github.repository }}
+        run: python -m app.main

@@ -4,8 +4,9 @@ WORKDIR /app
 
 RUN apk add --no-cache git openssh-client
 
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
 COPY . .
 
-RUN pip install --no-cache-dir pyyaml
-
-ENTRYPOINT ["python", "-m", "keeper"]
+ENTRYPOINT ["python", "-m", "app.main"]

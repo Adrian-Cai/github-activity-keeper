@@ -2,12 +2,11 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Optional
 
 
-class ContentGenerator(ABC):
+class Generator(ABC):
     name: str = ""
 
     @abstractmethod
-    def generate(self, repo_path: Path, config: dict) -> Optional[str]:
+    def generate(self, repo_path: Path, config: dict) -> str | None:
         ...

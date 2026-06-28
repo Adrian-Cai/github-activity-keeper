@@ -1,18 +1,18 @@
 from __future__ import annotations
 
 import random
-from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
 
-from .base import ContentGenerator
+from ..utils import now
+from .base import Generator
 
 QUOTES = [
-    "Keep shipping. Keep building.",
+    "Ship small, iterate fast.",
+    "Tests are documentation.",
+    "Keep learning.",
     "Consistency beats intensity.",
     "Small steps every day lead to big results.",
     "Code is poetry in motion.",
-    "The best time to start was yesterday. The next best time is now.",
     "Automate everything that can be automated.",
     "Quality is not an act, it is a habit.",
     "Done is better than perfect.",
@@ -20,25 +20,30 @@ QUOTES = [
     "Make it work, make it right, make it fast.",
     "Simplicity is the ultimate sophistication.",
     "Talk is cheap. Show me the code.",
-    "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.",
     "Premature optimization is the root of all evil.",
     "The only way to go fast is to go well.",
+    "Write code for humans first, computers second.",
+    "A commit a day keeps the burnout away.",
+    "Refactor mercilessly.",
+    "Document your decisions, not your code.",
+    "Good code is its own best documentation.",
 ]
 
 
-class MarkdownGenerator(ContentGenerator):
-    name = "markdown"
+class QuoteGenerator(Generator):
+    name = "quote"
 
-    def generate(self, repo_path: Path, config: dict) -> Optional[str]:
-        filepath = repo_path / "daily.md"
-        now = datetime.now(timezone.utc).astimezone()
+    def generate(self, repo_path: Path, config: dict) -> str | None:
+        filepath = repo_path / "data" / "quotes.md"
+        filepath.parent.mkdir(parents=True, exist_ok=True)
+
         quote = random.choice(config.get("quotes", QUOTES))
-        line = f"- {now.strftime('%Y-%m-%d')} — {quote}\n"
+        line = f"> {quote}\n\n"
+
         if filepath.exists():
             content = filepath.read_text(encoding="utf-8")
         else:
-            content = "# Daily Quotes\n\n"
+            content = "# Quotes\n\n"
         content += line
         filepath.write_text(content, encoding="utf-8")
-        date_str = now.strftime("%Y-%m-%d")
-        return f"daily quote: {date_str}"
+        return f"quote: {quote}"

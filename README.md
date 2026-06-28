@@ -1,74 +1,100 @@
 # GitHub Activity Keeper
 
-> Keep your GitHub activity graph green with **meaningful** commits — not spam.
+> Automatically keep your GitHub repositories active with configurable, meaningful maintenance tasks.
 
-A configurable, open-source tool that automatically performs lightweight repository maintenance tasks. Works via **GitHub Actions** or **Docker**.
+---
+
+## How It Works
+
+```text
+GitHub Action (every hour)
+        │
+        ▼
+Reads config.yaml
+        │
+        ▼
+Is this hour in today's schedule?
+        │
+        ▼
+Pick a random Generator (heartbeat / quote / readme)
+        │
+        ▼
+Modify a repository file
+        │
+        ▼
+Generate Commit Message → git add → git commit → git push
+```
 
 ---
 
 ## Quick Start (GitHub Actions)
 
-1. **Fork** or **create** a repository
-2. Add this workflow to `.github/workflows/activity.yml`:
+Add this workflow to `.github/workflows/activity.yml`:
 
 ```yaml
 on:
   schedule:
-    - cron: "0 */3 * * *"
+    - cron: "0 * * * *"
   workflow_dispatch:
 
 jobs:
   keep-alive:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
       - run: pip install pyyaml
-      - run: python -m keeper
+      - run: python -m app.main
         env:
           INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           INPUT_GITHUB_USERNAME: ${{ github.repository_owner }}
 ```
 
-3. That's it. The bot will run every 3 hours and make 1–5 commits per day.
-
 ---
 
 ## Configuration
 
-Copy `config.yaml` and customize:
-
 ```yaml
-strategy:
-  name: workday      # random | workday | worktime
-  min_commit: 2
-  max_commit: 6
+github:
+  username: your_name
+
+scheduler:
+  timezone: Asia/Shanghai
+  mode: random         # random | student | office-worker | maintainer | night-owl
+  min_commit: 1
+  max_commit: 4
 
 generator:
-  name: heartbeat    # heartbeat | markdown
-  file: heartbeat.md
+  enabled:
+    - heartbeat
+    - readme
+    - quote
 
 commit:
-  style: conventional
-  types: [docs, chore, refactor, style, test, ci]
+  style: conventional  # conventional | plain
 ```
 
-### Strategies
+### Scheduler Profiles
 
-| Strategy    | Behavior                              |
-|-------------|---------------------------------------|
-| `random`    | 1–5 commits at random times daily     |
-| `workday`   | 2–6 on weekdays, 0 on weekends        |
-| `worktime`  | 1–4 during 9–18 on weekdays           |
+| Mode            | Pattern                                    |
+|-----------------|--------------------------------------------|
+| `random`        | 1-4 commits at completely random hours     |
+| `student`       | Evenings and weekends favored              |
+| `office-worker` | Weekday work hours (9-12, 14-18) favored   |
+| `maintainer`    | Light activity almost every day            |
+| `night-owl`     | Late night hours (22-3) weighted           |
 
 ### Generators
 
-| Generator   | Writes                               |
-|-------------|--------------------------------------|
-| `heartbeat` | Timestamps to `heartbeat.md`         |
-| `markdown`  | Daily random quotes to `daily.md`    |
+| Generator    | Writes                     |
+|--------------|----------------------------|
+| `heartbeat`  | Timestamp to `data/heartbeat.md` |
+| `quote`      | Random dev quote to `data/quotes.md` |
+| `readme`     | Update `> Last updated` in README.md |
+
+The Action runs hourly; a generator is selected randomly each time. This creates realistic, uneven commit patterns.
 
 ---
 
@@ -84,25 +110,17 @@ docker run --rm \
 
 ---
 
-## Development
+## Why Hourly?
 
-```bash
-git clone https://github.com/yourname/github-activity-keeper
-cd github-activity-keeper
-pip install pyyaml
-python -m keeper --config config.yaml
+Running once per day creates all commits at `00:00` — clearly artificial.
+
+By running hourly and checking "is this hour scheduled?", your commit times naturally scatter across the day:
+
+```
+09:17  14:06  20:31
 ```
 
----
-
-## Philosophy
-
-This tool is about **consistency**, not deception. It performs real repository maintenance — updating logs, refreshing metadata, and keeping your projects tidy. It's designed for developers who:
-
-- Want to maintain an accurate activity history
-- Use commit tracking for accountability
-- Keep "archive" repos from appearing abandoned
-- Like seeing their green squares 🟩
+This matches real development rhythms.
 
 ---
 
