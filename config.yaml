@@ -1,0 +1,34 @@
+github:
+  token: ""  # or set GITHUB_TOKEN env var
+  username: ""  # or set GITHUB_USERNAME env var
+
+schedule:
+  timezone: Asia/Shanghai
+
+strategy:
+  name: random  # random | workday | worktime
+  min_commit: 1
+  max_commit: 5
+
+generator:
+  name: heartbeat  # heartbeat | markdown
+  file: heartbeat.md
+
+commit:
+  style: conventional  # conventional | plain
+  types:
+    - docs
+    - chore
+    - refactor
+    - style
+    - test
+    - ci
+  messages:
+    - update project activity
+    - daily maintenance
+    - keep repository active
+    - auto sync
+    - periodic update
+
+repository:
+  path: .
