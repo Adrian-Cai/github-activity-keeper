@@ -59,6 +59,7 @@ jobs:
 ```yaml
 github:
   username: your_name
+  email: your_email@example.com  # must match your GitHub verified email
 
 scheduler:
   timezone: Asia/Shanghai

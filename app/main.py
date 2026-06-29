@@ -56,7 +56,8 @@ def main() -> None:
         authed = remote_url.replace("https://github.com", f"https://{username}:{token}@github.com")
         git_client._exec(["remote", "set-url", "origin", authed], cwd=repo_path, env=push_env)
 
-    git_client.setup(repo_path, username, env=push_env)
+    email = config["github"].get("email", "")
+    git_client.setup(repo_path, username, email, env=push_env)
 
     ok = git_client.commit_and_push(repo_path, commit_msg, env=push_env)
     if ok:

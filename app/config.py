@@ -10,7 +10,10 @@ CONFIG_PATH = Path(os.environ.get("INPUT_CONFIG_PATH", "config.yaml"))
 
 def load() -> dict:
     config = {
-        "github": {"username": os.environ.get("INPUT_GITHUB_USERNAME") or os.environ.get("GITHUB_USERNAME", "")},
+        "github": {
+            "username": os.environ.get("INPUT_GITHUB_USERNAME") or os.environ.get("GITHUB_USERNAME", ""),
+            "email": os.environ.get("INPUT_GITHUB_EMAIL") or os.environ.get("GITHUB_EMAIL", ""),
+        },
         "scheduler": {"timezone": "Asia/Shanghai", "mode": "random", "min_commit": 1, "max_commit": 4},
         "generator": {"enabled": ["heartbeat", "readme", "quote"]},
         "commit": {"style": "conventional"},

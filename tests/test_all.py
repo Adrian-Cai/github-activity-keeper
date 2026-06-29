@@ -1,10 +1,14 @@
 from pathlib import Path
 
+import tempfile
+from pathlib import Path
+
 from app import config
 from app.commit_message import generate as gen_msg
 from app.generators.heartbeat import HeartbeatGenerator
 from app.generators.quote import QuoteGenerator
 from app.generators.readme import ReadmeGenerator
+from app.git_client import _exec, setup
 from app.scheduler import pick_hours, should_commit, PROFILES
 from app.utils import generate_commit_hours
 
@@ -77,6 +81,16 @@ def test_readme_no_file(tmp_path):
     g = ReadmeGenerator()
     result = g.generate(tmp_path, {})
     assert result is None
+
+
+def test_git_setup_email():
+    with tempfile.TemporaryDirectory() as d:
+        repo = Path(d)
+        from app.git_client import _exec
+        _exec(["init"], cwd=repo)
+        setup(repo, "testuser", "test@example.com")
+        out = _exec(["config", "user.email"], cwd=repo)
+        assert out == "test@example.com"
 
 
 def test_should_commit():

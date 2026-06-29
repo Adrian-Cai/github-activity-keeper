@@ -28,6 +28,7 @@ jobs:
         env:
           INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           INPUT_GITHUB_USERNAME: ${{ github.repository_owner }}
+          INPUT_GITHUB_EMAIL: ${{ vars.GITHUB_EMAIL || '' }}
           INPUT_CONFIG_PATH: config.yaml
           REMOTE_URL: ${{ github.server_url }}/${{ github.repository }}
         run: python -m app.main
